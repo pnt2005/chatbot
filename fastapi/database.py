@@ -1,10 +1,11 @@
+from dotenv import load_dotenv
+load_dotenv()
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
-URL_DATABASE = 'postgresql://postgres:postgres@172.24.167.166:5433/chatbot'
-
-engine = create_engine(URL_DATABASE)
+engine = create_engine(os.getenv('DATABASE_URL'))
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

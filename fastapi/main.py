@@ -1,11 +1,14 @@
+from dotenv import load_dotenv
+load_dotenv()
+import os
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
-from typing import List, Annotated
-import models
+from typing import Annotated
+import models, llm, pusher # type: ignore
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
-import llm
 from fastapi.middleware.cors import CORSMiddleware
+
 
 app = FastAPI()
 
@@ -53,6 +56,14 @@ async def get_answer(db: db_dependency):
         raise HTTPException(status_code=404, detail='answer is not found')
     return result
 
+pusher_client = pusher.Pusher(
+    app_id=os.getenv('APP_ID'),
+    key=os.getenv('KEY'),
+    secret=os.getenv('SECRET'),
+    cluster=os.getenv('CLUSTER'),
+    ssl=True
+)
+
 @app.post('/chat')
 async def post_chat(question: QuestionBase, db: db_dependency):
     db_question = models.Questions(text=question.text)
@@ -60,11 +71,10 @@ async def post_chat(question: QuestionBase, db: db_dependency):
     db.commit()
     db.refresh(db_question)
 
-    db_answer = models.Answers(text=llm.response(question.text))
+    answer = llm.response(question.text)
+    db_answer = models.Answers(text=answer)
     db.add(db_answer)
     db.commit()
     db.refresh(db_answer)
 
-
-
-
+    pusher_client.trigger('my-channel', 'my-event', {'message': answer})

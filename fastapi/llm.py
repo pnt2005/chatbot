@@ -2,23 +2,20 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
+from langchain.chains.conversation.memory import ConversationBufferMemory
+from langchain.chains import ConversationChain
 
-model = ChatOpenAI(
+llm = ChatOpenAI(
     model="gpt-3.5-turbo-1106",
     temperature=0.7
 )
 
+conversation = ConversationChain(
+        llm=llm,
+        verbose=True,
+        memory=ConversationBufferMemory()
+)
+
 def response(text):
-    prompt = ChatPromptTemplate.from_messages([
-        ("human", "{input}")
-    ])
-
-    parser = StrOutputParser()
-    chain = prompt | model | parser
-
-    return chain.invoke({
-        "input": text
-    })
-
+    conversation.predict(input = text)
+    return conversation.memory.buffer_as_messages[-1].content

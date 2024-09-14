@@ -6,25 +6,24 @@ export default function Post() {
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-
+        var data = message;
+        setMessage("");
+        
         await fetch('http://127.0.0.1:8000/chat', {
             method: 'POST',
             body: JSON.stringify({
-                text: message
+                text: data
             }),
             headers: {
                 'Content-Type': 'application/json'
             }
         });
-        
-        setMessage("");
     }
 
     return (
         <>
             <form onSubmit={handleSubmit}>
                 <input 
-                    id = "input"
                     type="text"
                     placeholder="type here"
                     value={message}

@@ -66,15 +66,14 @@ pusher_client = pusher.Pusher(
 
 @app.post('/chat')
 async def post_chat(question: QuestionBase, db: db_dependency):
-    db_question = models.Questions(text=question.text)
-    db.add(db_question)
-    db.commit()
-    db.refresh(db_question)
-
+    pusher_client.trigger('my-channel', 'my-event', {'message': question.text})
     answer = llm.response(question.text)
+    pusher_client.trigger('my-channel', 'my-event', {'message': answer})
+
+    db_question = models.Questions(text=question.text)
     db_answer = models.Answers(text=answer)
+    db.add(db_question)
     db.add(db_answer)
     db.commit()
-    db.refresh(db_answer)
-
-    pusher_client.trigger('my-channel', 'my-event', {'message': answer})
+    #db.refresh(db_question)
+    #db.refresh(db_answer)

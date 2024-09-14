@@ -1,7 +1,6 @@
 'use client';
 import Pusher from 'pusher-js';
 import { useState, useEffect } from 'react';
-import Post from "./Post";
 
 export default function Chat() {
   const [messages, setMessages] = useState<string[]>([]);
@@ -11,13 +10,9 @@ export default function Chat() {
   });
 
   useEffect(() => {
-    var question: any = document.getElementById("input");
-    
-
     var channel = pusher.subscribe('my-channel');
     channel.unbind('my-event');
     channel.bind('my-event', function(data: any) {
-      setMessages((prev) => [...prev, question.value]);
       setMessages((prev) => [...prev, data['message']]);
     });
     return () => pusher.unsubscribe('mychannel');

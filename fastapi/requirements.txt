@@ -6,3 +6,5 @@ python-dotenv
 psycopg2-binary
 langchain_openai
 pusher
+langchain_openai
+langchain[all]

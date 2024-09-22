@@ -6,5 +6,9 @@ python-dotenv
 psycopg2-binary
 langchain_openai
 pusher
-langchain_openai
 langchain[all]
+langchain_community
+pgvector
+langchain_postgres
+langgraph
+langgraph-checkpoint-postgres

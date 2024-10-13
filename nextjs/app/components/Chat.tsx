@@ -1,6 +1,7 @@
 'use client';
 import Pusher from 'pusher-js';
 import { useState, useEffect } from 'react';
+import Markdown from 'react-markdown';
 
 export default function Chat() {
   const [messages, setMessages] = useState<string[]>([]);
@@ -22,7 +23,7 @@ export default function Chat() {
     <ul>
       {messages.map((text, index) => ( 
         <li key={index}>
-          {text}
+          <Markdown>{text}</Markdown>
         </li>
       ))}
     </ul>

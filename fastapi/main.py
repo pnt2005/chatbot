@@ -4,7 +4,7 @@ import os
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Annotated
-import models, llm, pusher # type: ignore
+import models, rag_agent, pusher, plan_agent # type: ignore
 from database import engine, SessionLocal
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
@@ -67,7 +67,7 @@ pusher_client = pusher.Pusher(
 @app.post('/chat')
 async def post_chat(question: QuestionBase, db: db_dependency):
     pusher_client.trigger('my-channel', 'my-event', {'message': question.text})
-    answer = llm.response(question.text)
+    answer = plan_agent.response(question.text)
     pusher_client.trigger('my-channel', 'my-event', {'message': answer})
 
     db_question = models.Questions(text=question.text)
